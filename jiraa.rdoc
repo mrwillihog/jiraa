@@ -1,0 +1,5 @@
+= jiraa
+
+Generate this with
+    jiraa rdoc
+After you have described your command line interface
