@@ -62,14 +62,15 @@ command :resolve do |c|
       :as => options[:a]
     }
     params[:comment] = options[:comment] unless options[:comment].nil?
-    if options["log-work"]
+    if options["log-work"] or options[:Z]
+      time = options["log-work"] || "1m"
       if options[:Z]
         params = {
           :remaining_estimate => 0
         }
       end
-      JiraClient.create_worklog args[0], options["log-work"], params
-      puts "Logged #{options['log-work']} on #{args[0]}"
+      JiraClient.create_worklog args[0], time, params
+      puts "Logged #{time} on #{args[0]}"
     end
     JiraClient.resolve_issue args[0], params
     puts "Resolved #{args[0]} as #{options[:a]}"
@@ -174,6 +175,27 @@ command :search do |c|
     issues.each do |issue|
       puts "#{issue.key}\t#{issue.summary}"
     end
+    puts "No issues found" if issues.empty?
+  end
+end
+
+desc 'Display your issues currently in progress'
+command :current do |c|
+  c.action do |global_options,options,args|
+    issues = JiraClient.find_issues(:jql => "assignee = currentUser() AND status = 'In Progress'", :fields => [:summary, :status])
+    issues.each do |issue|
+      puts "#{issue.key}\t#{issue.summary}"
+    end
+    puts "No issues found" if issues.empty?
+  end
+end
+
+desc 'Tell Jira how you feel about it'
+arg_name 'EXPLETIVES...'
+command :rant do |c|
+  c.action do |global_options,options,args|
+    help_now! "Missing expletives" if args.length == 0
+    raise "503 Service Unavailable"
   end
 end
 
@@ -225,6 +247,7 @@ def configure_client(config)
     c.password = config["password"]
     c.port = config["port"]
     c.proxy = ENV['https_proxy']
+    c.api_path = "/jira/rest/api/2"
   end
 end
 
