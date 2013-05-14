@@ -191,7 +191,7 @@ command :current do |c|
 end
 
 desc 'Tell Jira how you feel about it'
-arg_name 'EXPLETIVES...'
+arg_name 'EXPLETIVE...'
 command :rant do |c|
   c.action do |global_options,options,args|
     help_now! "Missing expletives" if args.length == 0

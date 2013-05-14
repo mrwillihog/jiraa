@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    jiraa (1.0.1)
+    jiraa (1.0.2)
       gli (= 2.5.6)
       jira_client (= 1.0.0)
 
