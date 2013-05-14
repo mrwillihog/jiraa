@@ -15,7 +15,9 @@ include GLI::App
 
 program_desc 'Command line application for accessing the Jira 5 API'
 
+desc 'Display version information'
 version Jiraa::VERSION
+
 
 desc 'The base URL of your Jira instance (e.g. https://jira.company.com)'
 arg_name 'URL'
@@ -141,8 +143,8 @@ command "log-work" do |c|
   end
 end
 
-desc 'Display information about the Jira server'
-command :server do |c|
+desc 'Display information about Jira'
+command :info do |c|
   c.action do |global_options,options,args|
     info = JiraClient.server_info
     puts "Server: #{info.server_title}"
@@ -179,7 +181,7 @@ command :search do |c|
   end
 end
 
-desc 'Display your issues currently in progress'
+desc 'Display issues currently in progress and assigned to you'
 command :current do |c|
   c.action do |global_options,options,args|
     issues = JiraClient.find_issues(:jql => "assignee = currentUser() AND status = 'In Progress'", :fields => [:summary, :status])
