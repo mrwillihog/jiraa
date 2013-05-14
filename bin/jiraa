@@ -211,7 +211,7 @@ def load_config(global_config)
   config = if File.exists?(config_filename)
     read_config_file(config_filename)
   else
-    create_config_file(config_filename)
+    create_config_file(config_filename, global_config)
   end
 
   config.merge! global_config
@@ -221,19 +221,23 @@ def read_config_file(filename)
   YAML.load_file(filename) || {}
 end
 
-def create_config_file(filename)
+def create_config_file(filename, config)
+  url = config[:url] || "https://jira.example.com"
+  username = config[:username] || "username"
+  password = config[:password] || "password"
+  certificate = config[:certificate] || "/usr/local/certificates/my_cert.pem"
   File.open(filename, 'w') do |file|
     file.write <<-EOF
 ---
 # Enter the URL of your Jira instance here:
-# url: https://jira.example.com
+#{'#' unless config[:url]}url: #{url}
 
 # If your Jira server uses HTTP basic authentication then fill in your username and password:
-# username: my_username
-# password: my_password
+#{'#' unless config[:username]}username: #{username}
+#{'#' unless config[:password]}password: #{password}
 
 # If your Jira server users SSL certificate authentication then provide a path to your certificate:
-# certificate: /usr/local/certificates/my_cert.pem
+#{'#' unless config[:certificate]}certificate: #{certificate}
 EOF
     {}
   end
