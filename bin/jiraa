@@ -291,7 +291,6 @@ def configure_client(config)
     c.password = config["password"]
     c.port = config["port"]
     c.proxy = ENV['https_proxy']
-    c.api_path = "/jira/rest/api/2"
   end
 end
 
