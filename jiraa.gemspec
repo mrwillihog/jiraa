@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "aruba"
   spec.add_development_dependency "cucumber"
 
-  spec.add_runtime_dependency "jira_client", "1.0.0"
+  spec.add_runtime_dependency "jira_client", ">= 1.0.1"
   spec.add_runtime_dependency "gli", "2.5.6"
+  spec.add_runtime_dependency "colorize", "0.5.8"
 end
