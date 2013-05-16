@@ -8,7 +8,7 @@ module Jiraa
 
       def format
         color = issue_color(@issue.issuetype)
-        puts "#{@issue.key}\t#{@issue.summary} [#{@issue.status.name.upcase}] (@issue.assignee)".colorize(color)
+        puts "#{@issue.key}\t#{@issue.summary} [#{@issue.status.name.upcase}] (#{@issue.assignee})".colorize(color)
         if @options[:subtasks]
           puts
           puts "SUBTASKS"

@@ -161,7 +161,7 @@ command :show do |c|
 
   c.action do |global_options,options,args|
     help_now! "Missing issue key" if args.length == 0
-    fields = [:summary, :status, :issuetype]
+    fields = [:summary, :status, :issuetype, :assignee]
     fields << :description if options[:description]
     fields << :subtasks if options[:subtasks]
     fields << :comment if options[:comments]
