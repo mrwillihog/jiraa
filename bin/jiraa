@@ -20,14 +20,6 @@ desc 'The port your Jira instance is running on'
 arg_name 'PORT'
 flag [:P, :port]
 
-desc 'Your Jira username (if using HTTP basic authentication)'
-arg_name 'USERNAME'
-flag [:u,:username]
-
-desc 'Your Jira password (if using HTTP basic authentication)'
-arg_name 'PASSWORD'
-flag [:p,:password]
-
 desc 'Your Jira certificate (if using SSL authentication)'
 arg_name 'CERTIFICATE'
 flag [:C,:certificate]
@@ -213,7 +205,7 @@ end
 pre do |global,command,options,args|
   config = load_config(global)
   configure_client(config)
-  add_user_to_config if config["username"].nil?
+  config["username"] = add_user_to_config if config["username"].nil?
   true
 end
 
@@ -251,8 +243,6 @@ def configure_client(config)
   JiraClient.configure do |c|
     c.base_url = config["url"]
     c.certificate = config["certificate"]
-    c.username = config["username"]
-    c.password = config["password"]
     c.port = config["port"]
     c.proxy = ENV['https_proxy']
   end
@@ -265,6 +255,8 @@ def add_user_to_config
   File.open(File.join(ENV['HOME'], ".jiraa"), 'a') do |file|
     file.write "username: #{username}\n"
   end
+  puts "Please rerun the command"
+  exit 1
 end
 
 exit run(ARGV)
