@@ -213,6 +213,7 @@ end
 pre do |global,command,options,args|
   config = load_config(global)
   configure_client(config)
+  add_user_to_config if config["username"].nil?
   true
 end
 
@@ -224,7 +225,6 @@ def load_config(global_config)
   else
     create_config_file(config_filename, global_config)
   end
-
   config.merge! global_config
 end
 
@@ -234,19 +234,12 @@ end
 
 def create_config_file(filename, config)
   url = config[:url] || "https://jira.example.com"
-  username = config[:username] || "username"
-  password = config[:password] || "password"
   certificate = config[:certificate] || "/usr/local/certificates/my_cert.pem"
   File.open(filename, 'w') do |file|
     file.write <<-EOF
 ---
 # Enter the URL of your Jira instance here:
 #{'#' unless config[:url]}url: #{url}
-
-# If your Jira server uses HTTP basic authentication then fill in your username and password:
-#{'#' unless config[:username]}username: #{username}
-#{'#' unless config[:password]}password: #{password}
-
 # If your Jira server users SSL certificate authentication then provide a path to your certificate:
 #{'#' unless config[:certificate]}certificate: #{certificate}
 EOF
@@ -262,6 +255,15 @@ def configure_client(config)
     c.password = config["password"]
     c.port = config["port"]
     c.proxy = ENV['https_proxy']
+  end
+end
+
+def add_user_to_config
+  puts "Attempting to guess your Jira username..."
+  username = JiraClient.current_user.username
+  puts "Adding username '#{username}' to config"
+  File.open(File.join(ENV['HOME'], ".jiraa"), 'a') do |file|
+    file.write "username: #{username}\n"
   end
 end
 
