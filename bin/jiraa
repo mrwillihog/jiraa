@@ -100,6 +100,8 @@ arg_name 'ISSUE'
 command "start-progress" do |c|
   c.action do |global_options,options,args|
     help_now! "Missing issue key" if args.length == 0
+    # Assign the issue to me
+    assign_issue(args[0], @username)
     JiraClient.start_progress_on_issue args[0]
     puts "Progress started on #{args[0]}"
   end
@@ -183,6 +185,21 @@ command :current do |c|
   end
 end
 
+desc 'Assign an issue to you or a specified USER'
+arg_name 'ISSUE [USER]'
+command :assign do |c|
+  c.action do |global_options,options,args|
+    help_now! "Missing issue key" if args.length == 0
+    username = args[1] || @username
+    assign_issue(args[0], username)
+  end
+end
+
+def assign_issue(issue, username)
+  JiraClient.assign_issue issue, username
+  puts "Assigned #{issue} to #{username}"
+end
+
 desc 'Comment on an issue'
 arg_name 'ISSUE COMMENT'
 command :comment do |c|
@@ -205,7 +222,8 @@ end
 pre do |global,command,options,args|
   config = load_config(global)
   configure_client(config)
-  config["username"] = add_user_to_config if config["username"].nil?
+  add_user_to_config if config["username"].nil?
+  @username = config["username"]
   true
 end
 
@@ -255,8 +273,6 @@ def add_user_to_config
   File.open(File.join(ENV['HOME'], ".jiraa"), 'a') do |file|
     file.write "username: #{username}\n"
   end
-  puts "Please rerun the command"
-  exit 1
 end
 
 exit run(ARGV)
